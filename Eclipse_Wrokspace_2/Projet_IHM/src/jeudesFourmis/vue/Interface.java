@@ -5,19 +5,23 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 	
 	import jeudesFourmis.model.Fourmiliere;
@@ -43,11 +47,12 @@ import javafx.stage.Stage;
 			GridPane buttonsPane = new GridPane();
 			GridPane buttonsPane2 = new GridPane();
 			Grille panneau = new Grille();
+			Circle cercle = new Circle();
+			Rectangle rec = new Rectangle();
 			Button quit = new Button(" Quit ");
 			Button loupe = new Button(" Loupe ");
 			Button play_pause = new Button(" Play ");
 			Button reset = new Button(" Reset ");
-			Label label = new Label("   La tortue est à la position 250 250   ");
 			Fourmiliere f = new Fourmiliere(20,10,4);	
 			
 			//Creation du menu
@@ -66,8 +71,12 @@ import javafx.stage.Stage;
 		    
 		    
 			// Placement du cercle
-			//cercle.setCenterX(200);
-			//cercle.setCenterY(200);
+			
+		    
+		    
+			//
+		    
+			
 			
 			// Styles
 			panneau.setStyle("-fx-border-color: black; -fx-border-width: 2;");
@@ -75,7 +84,6 @@ import javafx.stage.Stage;
 			reset.setStyle("-fx-border-color: black; -fx-border-width: 2;");
 			loupe.setStyle("-fx-border-color: black; -fx-border-width: 2;");
 			play_pause.setStyle("-fx-border-color: black; -fx-border-width: 2;");
-			label.setStyle("-fx-border-color: black; -fx-border-width: 2;");
 			
 			// Alignements, etc...
 			bottomRightTopArea.setAlignment(Pos.CENTER);
@@ -86,7 +94,7 @@ import javafx.stage.Stage;
 			root2.setPadding(new Insets(10));
 			play_pause.setMaxWidth(Double.MAX_VALUE);
 			root.setPrefSize(panneau.getWidth(), panneau.getHeight());
-			root2.setPrefSize(panneau.getWidth(), panneau.getHeight());
+			//root2.setPrefSize(panneau.getWidth(), panneau.getHeight());
 			
 			// Emboitement des panneaux/boutons
 			buttonsPane.add(loupe, 0, 0 );
@@ -98,7 +106,7 @@ import javafx.stage.Stage;
 			bottomRightArea.getChildren().addAll(bottomRightTopArea, new Spring(),  bottomRightBottomArea);
 			bottomArea.getChildren().addAll(bottomLeftArea, new Spring(), bottomRightArea);
 			//panneau.getChildren().add(cercle);
-			root.getChildren().addAll(menuBar, panneau, new Spring(), bottomArea);
+			root.getChildren().addAll(panneau,new Spring(),menuBar, new Spring(), bottomArea);
 			
 			Service<Void> service = new Service<Void>() {
 				@Override
@@ -121,6 +129,25 @@ import javafx.stage.Stage;
 					};
 				}
 			};
+			
+			/*/Panneau
+			panneau.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+	            @Override
+	            public void handle(MouseEvent e) {
+
+	                for( Node node: panneau.getChildren()) {
+
+	                    if( node instanceof Rectangle) {
+	                        if( node.getBoundsInParent().contains(e.getSceneX(),  e.getSceneY())) {
+	                        	int rowIndex = panneau.getRowIndex( node);
+	                        	int colIndex = panneau.getColumnIndex(node);
+	                			Circle cercle = new Circle();
+	                            System.out.println( "Node: " + node + " at " + panneau.getRowIndex( node) + "/" + panneau.getColumnIndex(node));
+	                        }
+	                    }
+	                }
+	            }
+	        });*/
 			
 			// Bouton start
 			play_pause.setOnAction(e -> {
