@@ -68,15 +68,6 @@ import javafx.stage.Stage;
 		    MenuBar menuBar = new MenuBar(fileMenu);
 		    menuBar.setTranslateX(10);
 		    menuBar.setTranslateY(10);
-		    
-		    
-			// Placement du cercle
-			
-		    
-		    
-			//
-		    
-			
 			
 			// Styles
 			panneau.setStyle("-fx-border-color: black; -fx-border-width: 2;");
@@ -108,91 +99,11 @@ import javafx.stage.Stage;
 			//panneau.getChildren().add(cercle);
 			root.getChildren().addAll(panneau,new Spring(),menuBar, new Spring(), bottomArea);
 			
-			Service<Void> service = new Service<Void>() {
-				@Override
-				protected Task<Void> createTask() {
-					return new Task<Void>() {
-						@Override
-						protected Void call() throws Exception {
-							int maxiterations=100000;
-							for(int i = 0; i<maxiterations;i++){
-								if (isCancelled())
-								{
-									System.out.println("Pause");
-									break;
-								}
-								Thread.sleep(100);
-								System.out.println(i);
-							}
-							return null;
-						}
-					};
-				}
-			};
 			
-			/*/Panneau
-			panneau.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-	            @Override
-	            public void handle(MouseEvent e) {
-
-	                for( Node node: panneau.getChildren()) {
-
-	                    if( node instanceof Rectangle) {
-	                        if( node.getBoundsInParent().contains(e.getSceneX(),  e.getSceneY())) {
-	                        	int rowIndex = panneau.getRowIndex( node);
-	                        	int colIndex = panneau.getColumnIndex(node);
-	                			Circle cercle = new Circle();
-	                            System.out.println( "Node: " + node + " at " + panneau.getRowIndex( node) + "/" + panneau.getColumnIndex(node));
-	                        }
-	                    }
-	                }
-	            }
-	        });*/
+			//Panneau
 			
+	
 			// Bouton start
-			play_pause.setOnAction(e -> {
-				if(service.isRunning())
-				{	
-					play_pause.setText(" Play ");
-					service.cancel();
-				}
-				else
-				{
-					play_pause.setText("Pause");
-					service.stateProperty().addListener((observable, oldValue, newValue) -> {
-						switch (newValue) {
-							case CANCELLED:
-							case SUCCEEDED:
-			                	panneau.setDisable(false);
-			                	service.reset();
-			                	break;
-			                default:
-						}
-					});
-					service.start();
-				}
-			});
-			
-			
-			//Bouton Loupe 
-			loupe.setOnAction(e->{
-				root2.setPrefSize(330, 330);
-				panneau.setPANE_HEIGHT(11);
-				panneau.setPANE_WIDTH(11);
-				Scene sceneZoom = new Scene(root2);
-				primaryStage.setScene(sceneZoom);
-				primaryStage.show();
-			});
-			//Bouton Quit 
-			quit.setOnAction(e->{
-				Platform.exit();
-			});
-			
-			// Clic sur panneau
-		/*	panneau.setOnMouseClicked(e -> {
-				compteurX.setValue((int) e.getX());
-				compteurY.setValue((int) e.getY());
-			});*/
 			
 			// Bindings
 		/*/	cercle.centerXProperty().bind(compteurX.getValueProperty());

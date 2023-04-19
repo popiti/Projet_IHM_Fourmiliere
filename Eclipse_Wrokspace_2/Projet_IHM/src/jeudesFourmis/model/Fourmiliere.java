@@ -2,6 +2,10 @@ package jeudesFourmis.model;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+
 import java.util.Iterator;
 
 /**
@@ -16,10 +20,14 @@ import java.util.Iterator;
 
  
 public class Fourmiliere {
- 
-  private int largeur, hauteur ;
+  
+	
+  private int largeur,hauteur;
+  private int qMax;
+  private IntegerProperty largeurProperty = new SimpleIntegerProperty();
+  private IntegerProperty hauteurProperty = new SimpleIntegerProperty();
   // Le nombre maximal de graines par cases  
-  private int qMax ;  	
+  private IntegerProperty qmaxProperty = new SimpleIntegerProperty();  	
 
   // la liste des fourmis de la fourmiliere. 
   // Attention : la position X,Y d'une fourmi doit correspondre à un booleen true 
@@ -117,6 +125,28 @@ public class Fourmiliere {
     assert (x>0 && x <hauteur+1 && y > 0 && y <largeur+1);
     murs[y][x]=mur;
   }
+  
+  public IntegerProperty getQmaxProperty() {
+		return qmaxProperty;
+	}
+
+	public void setQmaxProperty(IntegerProperty qmax) {
+		this.qmaxProperty = qmax;
+	}
+	public IntegerProperty getLargeurProperty() {
+		return largeurProperty;
+	}
+
+	public void setLargeurProperty(IntegerProperty largeur) {
+		this.largeurProperty = largeur;
+	}
+	public IntegerProperty getHauteurProperty() {
+		return hauteurProperty;
+	}
+
+	public void setHauteurProperty(IntegerProperty hauteur) {
+		this.hauteurProperty = hauteur;
+	}
     
   /**
    * Presence  d'une fourmi au point (x,y) du terrain
@@ -328,7 +358,6 @@ public class Fourmiliere {
     }
     return res ; 
   }	
-
 
 
   /**

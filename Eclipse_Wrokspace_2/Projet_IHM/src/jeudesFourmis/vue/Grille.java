@@ -1,16 +1,11 @@
 package jeudesFourmis.vue;
 
-import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
+
 import jeudesFourmis.model.*;
 
 public class Grille extends GridPane  {
@@ -20,9 +15,9 @@ public class Grille extends GridPane  {
 	public static final int RADIUS = 5;
 	public Grille()
 	{
-		Fourmiliere f = new Fourmiliere(PANE_WIDTH,PANE_HEIGHT, 4);
 		int width = this.PANE_WIDTH;
-		int height = this.PANE_HEIGHT;	    
+		int height = this.PANE_HEIGHT;	
+		
 	    for (int row = 0; row < width; row++) 
 	    {
 			for (int col = 0; col < height; col++) {
@@ -37,7 +32,15 @@ public class Grille extends GridPane  {
 				this.getChildren().add(rectmp);
 	        }
 	    }
-	    
+	    this.setOnMouseClicked(e->
+	    {
+	    	Circle circle = new Circle();
+	    	for(Node node : this.getChildren())
+	    	{
+	    		if (node instanceof Rectangle)
+	    			this.addFourmi(circle, this.getRowIndex(node), this.getColumnIndex(node));
+	    	}
+	    });
 	}
 	
 	public Grille(int x,int y)
