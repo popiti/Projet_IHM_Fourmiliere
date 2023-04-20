@@ -9,26 +9,25 @@ public class Infos extends HBox {
 	
 	private Label graines = new Label();
 	private Label fourmis = new Label();
+	private Label iterations = new Label();
 
 	public Infos()
 	{	
 		
 	}
-
-	public Label getGraines() {
+	
+	public Label getGrainesL() {
 		return graines;
 	}
 
-	public void setGraines(Label graines) {
-		this.graines = graines;
-	}
-
-	public Label getFourmis() {
+	public Label getFourmisL() {
 		return fourmis;
 	}
 
-	public void setFourmis(Label fourmis) {
-		this.fourmis = fourmis;
+	public Label getIterationsL() {
+		return this.iterations;
 	}
-
+	
+	
+	
 }

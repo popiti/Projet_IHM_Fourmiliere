@@ -3,6 +3,8 @@ package jeudesFourmis.model;
 import java.util.LinkedList;
 import java.util.List;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
@@ -21,13 +23,18 @@ import java.util.Iterator;
  
 public class Fourmiliere {
   
-	
-  private int largeur,hauteur;
-  private int qMax;
   private IntegerProperty largeurProperty = new SimpleIntegerProperty();
   private IntegerProperty hauteurProperty = new SimpleIntegerProperty();
-  // Le nombre maximal de graines par cases  
   private IntegerProperty qmaxProperty = new SimpleIntegerProperty();  	
+  private IntegerProperty nbrGrainesProperty = new SimpleIntegerProperty();  	
+  private IntegerProperty nbrfourmiProperty = new SimpleIntegerProperty();
+  private IntegerProperty iterationProperty = new SimpleIntegerProperty();
+  
+  //Largeur et hauteur de la matrice du plateau
+  private int largeur,hauteur;
+  
+  // Le nombre maximal de graines par cases  
+  private int qMax;
 
   // la liste des fourmis de la fourmiliere. 
   // Attention : la position X,Y d'une fourmi doit correspondre à un booleen true 
@@ -48,13 +55,20 @@ public class Fourmiliere {
    * Crée une fourmiliere de largeur l et de hauteur h. 
    * @param l			largeur 
    * @param h			hauteur
-   * @param qMax                la qte max de graines par case
+   * @param qMax        la qte max de graines par case
    */
   public Fourmiliere(int l, int h, int qMax) {
     this.largeur = l;
     this.hauteur = h;
     this.qMax = qMax ; 
-	
+    IntegerProperty width = new SimpleIntegerProperty(l);
+	IntegerProperty height = new SimpleIntegerProperty(h);
+	IntegerProperty graines = new SimpleIntegerProperty(qMax);
+	  
+	this.getLargeurProperty().bind(width);
+	this.getHauteurProperty().bind(height);
+	this.getQmaxProperty().bind(graines);
+
     this.lesFourmis = new LinkedList<Fourmi>(); 
     	
     fourmis = new boolean[hauteur+2][largeur+2];
@@ -122,32 +136,50 @@ public class Fourmiliere {
    * @param mur			vrai si l'on veut poser un mur, faux sinon
    */
   public void setMur(int x, int y, boolean mur) {
-    assert (x>0 && x <hauteur+1 && y > 0 && y <largeur+1);
+    assert (x>0 && x <this.getHauteurProperty().getValue()+1 && y > 0 && y <this.getLargeurProperty().getValue()+1);
     murs[y][x]=mur;
   }
   
   public IntegerProperty getQmaxProperty() {
 		return qmaxProperty;
 	}
-
-	public void setQmaxProperty(IntegerProperty qmax) {
-		this.qmaxProperty = qmax;
+  public IntegerProperty getNbrGrainesProperty()
+	{
+		return this.nbrGrainesProperty;
 	}
+
 	public IntegerProperty getLargeurProperty() {
 		return largeurProperty;
 	}
 
-	public void setLargeurProperty(IntegerProperty largeur) {
-		this.largeurProperty = largeur;
-	}
 	public IntegerProperty getHauteurProperty() {
 		return hauteurProperty;
 	}
-
-	public void setHauteurProperty(IntegerProperty hauteur) {
-		this.hauteurProperty = hauteur;
-	}
     
+	public int getNbrFourmi()
+	{
+		return this.lesFourmis.size();
+	}
+	
+	public IntegerProperty getNbrFourmiProperty()
+	{
+		return this.nbrfourmiProperty;
+	}
+	
+	public void setNbrGrainesProperty(Number value) {
+		this.nbrGrainesProperty.setValue(value);
+	}
+	
+	public IntegerProperty getIterationProperty()
+	{
+		return this.iterationProperty;
+	}
+	
+	public void setIterationProperty(Number value)
+	{
+		this.iterationProperty.setValue(value);;
+	}
+	
   /**
    * Presence  d'une fourmi au point (x,y) du terrain
    * @param x		coordonnee
@@ -168,6 +200,8 @@ public class Fourmiliere {
       Fourmi f = new Fourmi(x,y,false);
       fourmis[y][x]=true ; 			
       lesFourmis.add(f);
+      IntegerProperty size = new SimpleIntegerProperty(this.lesFourmis.size());
+      this.nbrfourmiProperty.bind(size);
     };
   }
 		
@@ -189,13 +223,16 @@ public class Fourmiliere {
    */
   public void setQteGraines(int x, int y, int qte) {
     //assert (qte >=0 && qte <=QMAX); 
-    if(qte < 0 || qte > qMax) {
+    if(qte < 0 || qte > this.getQmaxProperty().getValue()) {
       return;
     }
     this.qteGraines[y][x]=qte;
+    this.setNbrGrainesProperty(Bindings.add(this.nbrGrainesProperty, new SimpleIntegerProperty(qte)).getValue());
   }
 
-  /**
+  
+
+/**
    * Compte les graines du point (x,y) et des cellules voisines 
    * Les voisines s'entendent au sens de 8-connexité. 
    * On ne compte pas les graines sur les murs) 
@@ -204,7 +241,7 @@ public class Fourmiliere {
    * @return		le nombre de graines
    */
   private int compteGrainesVoisines(int x, int y) {
-    assert (x>0 && x <hauteur+1 && y > 0 && y <largeur+1);
+    assert (x>0 && x <this.getHauteurProperty().getValue()+1 && y > 0 && y <this.getLargeurProperty().getValue()+1);
     int nb = 0 ; 
     for (int vx = -1 ; vx < 2 ; vx++)
       for (int vy = -1 ; vy < 2 ; vy++)
@@ -287,6 +324,7 @@ public class Fourmiliere {
       fourmis[deltaY][deltaX]=true; 
       f.setX(deltaX);
       f.setY(deltaY);
+      
       // la fourmi pose ? 
       if (f.porte() && qteGraines[deltaY][deltaX]<qMax){
 	if (Math.random()<Fourmi.probaPose(compteGrainesVoisines(deltaX,deltaY))){
@@ -296,6 +334,7 @@ public class Fourmiliere {
 	
       };
     }
+    this.setIterationProperty(Bindings.add(this.iterationProperty, new SimpleIntegerProperty(1)).getValue());
   }
 
 
@@ -370,8 +409,9 @@ public class Fourmiliere {
     // TODO Auto-generated method stub
 			
     // La fourmilere
-    Fourmiliere f = new Fourmiliere(20,10,4);
-			
+	  
+	  Fourmiliere f = new Fourmiliere(50,20,4);
+	  
     // On crée quelques murs
     for (int i =1; i <4; i++)
       f.setMur(i, 2*i, true);
@@ -384,7 +424,7 @@ public class Fourmiliere {
       f.setQteGraines(2*i, i, 1);
       f.setQteGraines(2*i , 11-i , 1);
     }
-			
+    
     // On affiche les probabilités de prise et dépot.  
     System.out.println("proba      Prise      Pause ");
     for (int i = 0 ; i <24 ; i++){
@@ -398,9 +438,10 @@ public class Fourmiliere {
     System.out.println(f.stringFourmis());
 			
     // On fait evoluer la fourmiliere 
-    for (int i =1 ; i <100000 ; i++) {
+    for (int i =1 ; i <10 ; i++) {
       f.evolue();
-      System.out.println("-------------------- "+i+" ----------------------------------");
+      System.out.println("hauteur :"+f.getHauteurProperty().getValue() + "// largeur : "+ f.getLargeurProperty().getValue() +" //grainesmaxcase : " + f.getQmaxProperty().getValue() +" //grainesmaxcase : " +f.getNbrGrainesProperty().getValue());
+      System.out.println("-------------------- "+i+" || binding : "+ f.getIterationProperty().getValue()+" ----------------------------------");
       System.out.println("---------------------      --------------------------------");
       System.out.println(f.stringMurs());
       System.out.println(f.stringGraines());	

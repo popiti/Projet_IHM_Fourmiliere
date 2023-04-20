@@ -1,9 +1,11 @@
 package jeudesFourmis.vue;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.scene.Scene;
+import javafx.util.converter.NumberStringConverter;
 import jeudesFourmis.model.Fourmiliere;
 
 public class GameController {
@@ -18,8 +20,11 @@ public class GameController {
 		this.f = f;
 		this.vue = vue;
 		
+		bindings();
+		
 		service();
 		quit();
+		ajoutFourmi();
 		play_pause();
 		
 	}
@@ -56,19 +61,22 @@ public class GameController {
 	
 	public void bindings ()
 	{
-		
+		vue.getInfos().getGrainesL().textProperty().bind(Bindings.concat("Nombre de graines : ").concat(f.getNbrGrainesProperty().asString()));
+		vue.getInfos().getFourmisL().textProperty().bind(Bindings.concat("Nombre de fourmis : ").concat(f.getNbrFourmiProperty().asString()));
 	}
 	
-	public void events()
-	{
-		
-	}
 	
 	public void quit()
 	{
 		this.vue.getQuit().setOnAction(e->{
 		Platform.exit();
 	});
+	}
+	
+	public void ajoutFourmi()
+	{
+		this.vue.getPanneau().setOnMouseClicked(event->this.vue.getPanneau().pressed(event));
+
 	}
 	
 	public void play_pause()
@@ -102,32 +110,10 @@ public class GameController {
 	});
 	}
 	
-	/*
-	this.vue.getQuit().setOnAction(e -> {
-		if(this.service.isRunning())
-		{	
-			play_pause.setText(" Play ");
-			service.cancel();
-		}
-		else
-		{
-			play_pause.setText("Pause");
-			service.stateProperty().addListener((observable, oldValue, newValue) -> {
-				switch (newValue) {
-					case CANCELLED:
-					case SUCCEEDED:
-	                	panneau.setDisable(false);
-	                	service.reset();
-	                	break;
-	                default:
-				}
-			});
-			service.start();
-		}
-	});
 	
 	
-	//Bouton Loupe 
+	
+	/*/Bouton Loupe 
 	loupe.setOnAction(e->{
 		root2.setPrefSize(330, 330);
 		panneau.setPANE_HEIGHT(11);
@@ -135,7 +121,7 @@ public class GameController {
 		Scene sceneZoom = new Scene(root2);
 		primaryStage.setScene(sceneZoom);
 		primaryStage.show();
-	});*/
+	});
 	
 	
 	// Clic sur panneau

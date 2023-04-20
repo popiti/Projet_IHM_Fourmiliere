@@ -2,6 +2,7 @@ package application;
 	
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.stage.Stage;
 import jeudesFourmis.model.Fourmiliere;
 import jeudesFourmis.vue.GameController;
@@ -21,11 +22,13 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 public class Main extends Application {
+	
 	public static Stage stage;
+	@Override
 	public void start(Stage primarystage) {
 		stage = primarystage;
         GameVue vue = new GameVue(primarystage); 
-        
+
         GameController c = new GameController(new Fourmiliere(10, 10, 3),vue);
         
         primarystage.setTitle("Grid");

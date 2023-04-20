@@ -1,6 +1,7 @@
 package jeudesFourmis.vue;
 
 import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -32,15 +33,26 @@ public class Grille extends GridPane  {
 				this.getChildren().add(rectmp);
 	        }
 	    }
-	    this.setOnMouseClicked(e->
-	    {
-	    	Circle circle = new Circle();
-	    	for(Node node : this.getChildren())
-	    	{
-	    		if (node instanceof Rectangle)
-	    			this.addFourmi(circle, this.getRowIndex(node), this.getColumnIndex(node));
-	    	}
-	    });
+	    
+	}
+	
+	public void pressed(MouseEvent e) {
+    	for( Node node: this.getChildren()) {
+
+            if( node instanceof Rectangle) {
+                if( node.getBoundsInParent().contains(e.getSceneX(),  e.getSceneY())) {
+                    int rowIndex = this.getRowIndex( node);
+                    int colIndex = this.getColumnIndex(node);
+
+                    Circle cercle = new Circle(RADIUS);
+
+                    cercle.setCenterY(180);
+                    cercle.setLayoutX(100);
+                    System.out.println( "Node: " + node + " at " + this.getRowIndex( node) + "/" + this.getColumnIndex(node));
+                    this.addFourmi(cercle,this.getColumnIndex( node),  this.getRowIndex(node));
+                }
+            }
+        }
 	}
 	
 	public Grille(int x,int y)

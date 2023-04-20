@@ -1,7 +1,9 @@
 package jeudesFourmis.vue;
 
+import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -9,25 +11,18 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import jeudesFourmis.model.Fourmiliere;
 
-public class GameVue extends VBox {
-	
+
+public class testtrash extends Application {
 	public static final int VGROW = 15;
-	public static final int HGROW = 5;
-	public static final int RADIUS = 5;
-	public static final int PANE_WIDTH = 500;
-	public static final int PANE_HEIGHT = 500;
+public static final int HGROW = 5;
+public static final int RADIUS = 5;
+public static final int PANE_WIDTH = 500;
+public static final int PANE_HEIGHT = 500;
+	@Override
+	public void start(Stage primaryStage) {
 	
-	private Button quit;
-	private Button loupe;
-	private Button play_pause;
-	private Button reset;
-	private Grille panneau;
-	private Infos infos = new Infos();
-	
-	public GameVue(Stage primaryStage) {
-		super();
+
 		// Création des objets
 		VBox root = new VBox(VGROW);
 		HBox bottomArea = new HBox(HGROW);
@@ -57,6 +52,7 @@ public class GameVue extends VBox {
 		bottomLeftArea.setAlignment(Pos.CENTER_RIGHT);
 		buttonsPane.setVgap(HGROW);
 		buttonsPane.setHgap(VGROW);
+		root.setPadding(new Insets(10));
 	    play_pause.setMaxWidth(Double.MAX_VALUE);
 		root.setPrefSize(panneau.getWidth(), panneau.getHeight());
 	
@@ -64,6 +60,8 @@ public class GameVue extends VBox {
 		// Emboitement des panneaux/boutons
 		buttonsPane.add(loupe, 0, 0 );
 		buttonsPane.add(play_pause, 0, 1);
+		buttonsPane.add(reset, 4, 0);
+		buttonsPane.add(quit, 4, 1);
 		buttonsPane.add(new Spring(), 2, 0);
 		bottomLeftArea.getChildren().addAll(buttonsPane);
 		bottomRightTopArea.getChildren().add(reset);
@@ -71,59 +69,12 @@ public class GameVue extends VBox {
 		bottomRightArea.getChildren().addAll(bottomRightTopArea, new Spring(),  bottomRightBottomArea);
 		bottomArea.getChildren().addAll(bottomLeftArea, new Spring(), bottomRightArea);
 		root.getChildren().addAll(panneau,new Spring(), bottomArea);
-		this.setLoupe(loupe);
-		this.setQuit(quit);
-		this.setPlay_pause(play_pause);
-		this.setReset(reset);	
-		this.setPanneau(panneau);
-		this.getChildren().add(root);
-	}
-
-	public Infos getInfos()
-	{
-		return this.infos;
-	}
 	
-	public Button getQuit() {
-		return quit;
+	Scene scene = new Scene(root);
+	primaryStage.setScene(scene);
+	primaryStage.show();
+}
+	public static void main(String[] args) {
+		launch(args);
 	}
-
-	public void setQuit(Button quit) {
-		this.quit = quit;
-	}
-
-	public Button getLoupe() {
-		return loupe;
-	}
-
-	public void setLoupe(Button loupe) {
-		this.loupe = loupe;
-	}
-
-	public Button getPlay_pause() {
-		return play_pause;
-	}
-
-	public void setPlay_pause(Button play_pause) {
-		this.play_pause = play_pause;
-	}
-
-	public Button getReset() {
-		return reset;
-	}
-
-	public void setReset(Button reset) {
-		this.reset = reset;
-	}
-
-	public Grille getPanneau() {
-		return panneau;
-	}
-
-	public void setPanneau(Grille panneau) {
-		this.panneau = panneau;
-	}
-	
-	
-	
 }
