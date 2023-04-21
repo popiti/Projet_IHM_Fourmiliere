@@ -26,10 +26,10 @@ public class Fourmiliere {
   private IntegerProperty largeurProperty = new SimpleIntegerProperty();
   private IntegerProperty hauteurProperty = new SimpleIntegerProperty();
   private IntegerProperty qmaxProperty = new SimpleIntegerProperty();  	
-  private IntegerProperty nbrGrainesProperty = new SimpleIntegerProperty();  	
+  private IntegerProperty nbrGrainesProperty = new SimpleIntegerProperty();
   private IntegerProperty nbrfourmiProperty = new SimpleIntegerProperty();
   private IntegerProperty iterationProperty = new SimpleIntegerProperty();
-  
+  private int sizeListF = 0;
   //Largeur et hauteur de la matrice du plateau
   private int largeur,hauteur;
   
@@ -180,6 +180,34 @@ public class Fourmiliere {
 		this.iterationProperty.setValue(value);;
 	}
 	
+	public void resetFourmiliere()
+	{
+		this.largeur = this.getLargeurProperty().getValue();
+	    this.hauteur = this.getHauteurProperty().getValue();
+	    this.qMax = this.getQmaxProperty().getValue();
+		
+	    this.getNbrFourmiProperty().unbind();
+	    this.getNbrFourmiProperty().setValue(0);
+	    this.getNbrGrainesProperty().setValue(0);
+	    this.getIterationProperty().setValue(0);
+	    this.lesFourmis = new LinkedList<Fourmi>(); 
+	    	
+	    fourmis = new boolean[hauteur+2][largeur+2];
+	    for (int i =0 ; i < hauteur+2 ; i++)
+	      for (int j =0 ; j < largeur+2 ; j++)
+		fourmis[i][j] = false ; 
+		
+	    murs = new boolean[hauteur+2][largeur+2];
+	    for (int i =0 ; i < hauteur+2 ; i++)
+	      for (int j =0 ; j < largeur+2 ; j++)
+		murs[i][j] = (i==0)||(i==hauteur+1)||(j==0)||(j==largeur+1) ;
+		
+	    qteGraines = new int[hauteur+2][largeur+2];
+	    for (int i =0 ; i < hauteur+2 ; i++)
+	      for (int j =0 ; j < largeur+2; j++)
+		qteGraines [i][j]=0 ; 
+	}
+	
   /**
    * Presence  d'une fourmi au point (x,y) du terrain
    * @param x		coordonnee
@@ -201,6 +229,7 @@ public class Fourmiliere {
       fourmis[y][x]=true ; 			
       lesFourmis.add(f);
       IntegerProperty size = new SimpleIntegerProperty(this.lesFourmis.size());
+     // this.sizeListF++;
       this.nbrfourmiProperty.bind(size);
     };
   }
@@ -264,17 +293,20 @@ public class Fourmiliere {
    *        
    */
   public void evolue() {
+	  int pl = 0;
     Iterator<Fourmi> ItFourmi = lesFourmis.iterator();
     while (ItFourmi.hasNext()) {
+      pl++;
       Fourmi f = ItFourmi.next();
       int posX = f.getX(); 
       int posY = f.getY(); 
       // la fourmi f prend ?  
       if (!f.porte() &&  qteGraines[f.getY()][f.getX()]>0){
-	if (Math.random()<Fourmi.probaPrend(compteGrainesVoisines(posX,posY))){
+	//if (Math.random()<Fourmi.probaPrend(compteGrainesVoisines(posX,posY))){
 	  f.prend();
+	  System.out.println("Prend  : true"+ "|| deltaX->"+f.getX()+" || deltaY->"+f.getY() );
 	  qteGraines[posY][posX]--;					
-	}
+	//}
       }
       // la fourmi f se déplace. 
       int deltaX ; 
@@ -324,13 +356,15 @@ public class Fourmiliere {
       fourmis[deltaY][deltaX]=true; 
       f.setX(deltaX);
       f.setY(deltaY);
+      System.out.println("Fourmi n° : "+pl+ "||" + deltaX +"<-deltaX | deltaY->"+ deltaY);
       
       // la fourmi pose ? 
       if (f.porte() && qteGraines[deltaY][deltaX]<qMax){
-	if (Math.random()<Fourmi.probaPose(compteGrainesVoisines(deltaX,deltaY))){
+    //if (Math.random()<Fourmi.probaPose(compteGrainesVoisines(deltaX,deltaY))){
 	  f.pose();
-	  qteGraines[deltaY][deltaX]++;				
-	}
+	  qteGraines[deltaY][deltaX]++;	
+	  System.out.println("Pose : true ||" + deltaX +"<-deltaX | deltaY->"+ deltaY);
+	//}
 	
       };
     }
@@ -374,7 +408,7 @@ public class Fourmiliere {
       for (int j =0 ; j < largeur+2; j++)
 	if (murs[i][j])
 	  res = res + "X"; 
-	else if (fourmis[i][j])	{
+	else if (fourmis[j][i])	{
 	  res = res + "O";
 	}
 	else 
@@ -410,11 +444,11 @@ public class Fourmiliere {
 			
     // La fourmilere
 	  
-	  Fourmiliere f = new Fourmiliere(50,20,4);
+	  Fourmiliere f = new Fourmiliere(20,20,4);
 	  
     // On crée quelques murs
     for (int i =1; i <4; i++)
-      f.setMur(i, 2*i, true);
+      f.setMur(i, i*2, true);
     // On ajoute 3 fourmis dans la fourmilière
     f.ajouteFourmi(1, 1);
     f.ajouteFourmi(2, 2);

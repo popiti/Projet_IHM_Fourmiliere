@@ -33,6 +33,7 @@ import javafx.stage.Stage;
 		public static final int RADIUS = 5;
 		public static final int PANE_WIDTH = 500;
 		public static final int PANE_HEIGHT = 500;
+		private Fourmiliere f;
 		
 		@Override
 		public void start(Stage primaryStage) {
@@ -46,7 +47,7 @@ import javafx.stage.Stage;
 			HBox bottomRightBottomArea  = new HBox(VGROW);
 			GridPane buttonsPane = new GridPane();
 			GridPane buttonsPane2 = new GridPane();
-			Grille panneau = new Grille();
+			Grille panneau = new Grille(f);
 			Circle cercle = new Circle();
 			Rectangle rec = new Rectangle();
 			Button quit = new Button(" Quit ");
