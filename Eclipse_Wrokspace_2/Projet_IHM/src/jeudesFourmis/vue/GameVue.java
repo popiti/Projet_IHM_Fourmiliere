@@ -7,9 +7,12 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -26,124 +29,45 @@ public class GameVue extends GridPane {
 	public static final int PANE_WIDTH = 1000;
 	public static final int PANE_HEIGHT = 1000;
 	
-	private Button quit;
-	private Button loupe;
-	private Button play_pause;
-	private Button reset;
 	private Grille panneau;
 	private Infos infos = new Infos();
 	private GameController func = new GameController();
-	public GameVue(Stage stage, Fourmiliere f) {
+	private Buttons boutton;
+	private Label nbFourmi;
+	private Label nbGraines;
+	private Label nbMurs;
+	private Slider slider;
+	
+	public GameVue(Fourmiliere f) {
 		
-		super();
+		//super();
  		this.setPadding(new Insets(10));
-		this.func.setStage(stage);
-		// Création des objets
+
+ 		// Création des objets
 		VBox root = new VBox();
-		HBox bottomArea = new HBox(HGROW);
-		VBox bottomLeftArea = new VBox(HGROW);
-		VBox bottomRightArea = new VBox(HGROW);
-		HBox bottomRightTopArea  = new HBox(VGROW);
-		HBox bottomRightBottomArea  = new HBox(VGROW);
-		GridPane buttonsPane = new GridPane();
-		GridPane buttonsPane2 = new GridPane();
 		Grille panneau = new Grille(f);
-		Circle cercle = new Circle();
-		Rectangle rec = new Rectangle();
-		Button quit = new Button("Quit");
-		Button loupe = new Button("loupe");
-		Button play_pause = new Button("Play");
-		Button reset = new Button("Reset");
-		
+		this.panneau = panneau;
+		Buttons b = new Buttons();
+		this.slider = new Slider(100, 1000, 100);
 		// Styles
-		quit.setStyle("-fx-border-color: black; -fx-border-width: 2;");
-		reset.setStyle("-fx-border-color: black; -fx-border-width: 2;");
-		loupe.setStyle("-fx-border-color: black; -fx-border-width: 2;");
-		play_pause.setStyle("-fx-border-color: black; -fx-border-width: 2;");
+		
 		
 		// Alignements, etc...
-		bottomRightArea.setAlignment(Pos.CENTER_RIGHT);
-		bottomLeftArea.setAlignment(Pos.CENTER_RIGHT);
-		buttonsPane.setVgap(HGROW);
-		buttonsPane.setHgap(VGROW);
-	    play_pause.setMaxWidth(Double.MAX_VALUE);
 		root.setPrefSize(panneau.getWidth(), panneau.getHeight());
 		this.setPrefSize(PANE_HEIGHT, PANE_WIDTH);
-		
 		// Emboitement des panneaux/boutons
-		buttonsPane.add(loupe, 0, 0 );
-		buttonsPane.add(play_pause, 0, 1);
-		buttonsPane.add(new Spring(), 2, 0);
-		bottomLeftArea.getChildren().addAll(buttonsPane);
-		bottomRightTopArea.getChildren().add(reset);
-		bottomRightBottomArea.getChildren().add(quit);
-		bottomRightArea.getChildren().addAll(bottomRightTopArea, new Spring(),  bottomRightBottomArea);
-		bottomArea.getChildren().addAll(bottomLeftArea, new Spring(), bottomRightArea);
-
-		root.getChildren().addAll(infos.getIterationsL(),infos.getGrainesL(),infos.getFourmisL(),panneau,new Spring(), bottomArea);
-		this.setLoupe(loupe);
-		this.setQuit(quit);
-		this.setPlay_pause(play_pause);
-		this.setReset(reset);	
-		this.setPanneau(panneau);
+		
+		b.getSize().setText(""+f.getLargeurProperty().getValue()+"");
+		root.getChildren().addAll(this.slider,infos.getIterationsL(),infos.getGrainesL(),infos.getFourmisL(),panneau,new Spring(), b);
+		this.setBoutton(b);
+		//this.setPanneau(panneau);
 		this.getChildren().addAll(root);
-		/*super();
-		this.func.setStage(stage);
 		
-		this.setAlignment(Pos.BOTTOM_RIGHT);
-		this.setPadding(new Insets(10));
-		
-		Label titre = new Label("Gomoku");
-		titre.setFont(new Font("Arial", 35));
-	
-		GridPane bottomArea = new GridPane();
-		
-		Button quit = new Button("QUIT");
-		quit.setOnAction(e->{
-			Platform.exit();
-		});
-		
-		bottomArea.setAlignment(Pos.BOTTOM_RIGHT);
-		bottomArea.getChildren().add(quit);
-		
-		this.getChildren().addAll(titre,bottomArea);*/
 	}
 
 	public Infos getInfos()
 	{
 		return this.infos;
-	}
-	
-	public Button getQuit() {
-		return quit;
-	}
-
-	public void setQuit(Button quit) {
-		this.quit = quit;
-	}
-
-	public Button getLoupe() {
-		return loupe;
-	}
-
-	public void setLoupe(Button loupe) {
-		this.loupe = loupe;
-	}
-
-	public Button getPlay_pause() {
-		return play_pause;
-	}
-
-	public void setPlay_pause(Button play_pause) {
-		this.play_pause = play_pause;
-	}
-
-	public Button getReset() {
-		return reset;
-	}
-
-	public void setReset(Button reset) {
-		this.reset = reset;
 	}
 
 	public Grille getPanneau() {
@@ -199,5 +123,30 @@ public class GameVue extends GridPane {
 				}
 			}
 	    }
+	}
+
+	public Buttons getBoutton() {
+		return boutton;
+	}
+
+	public void setBoutton(Buttons boutton) {
+		this.boutton = boutton;
+	}
+	
+	public double getMinSlider() {
+		return this.slider.getMin();
+	}
+	
+	public double getMaxSlider() {
+		return this.slider.getMax();
+	}
+	
+	public double getValueSlider() {
+		return this.slider.getValue();
+	}
+	
+	public Slider getSlider()
+	{
+		return this.slider;
 	}
 }

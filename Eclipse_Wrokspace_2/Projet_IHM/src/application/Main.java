@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 import jeudesFourmis.model.Fourmiliere;
 import jeudesFourmis.vue.GameController;
 import jeudesFourmis.vue.GameVue;
+import jeudesFourmis.vue.Grille;
 import jeudesFourmis.vue.Infos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -33,13 +34,12 @@ public class Main extends Application {
 		
 		stage = primarystage;
 		BorderPane root = new BorderPane();
-		Fourmiliere f = new Fourmiliere(20, 20, 3);
+		Fourmiliere f = new Fourmiliere(Grille.TAILLE_DEFAULT, Grille.TAILLE_DEFAULT, 3);
 		 for (int i =0; i <10; i++){
 		        f.setQteGraines(i,2*i, 1);
 		        f.setQteGraines(11-i,2*i , 1);
 		      }
-        GameVue vue = new GameVue(primarystage,f);
-        f.setQteGraines(15, 1, 3);
+        GameVue vue = new GameVue(f);
         
         root.setBottom(vue);
 		

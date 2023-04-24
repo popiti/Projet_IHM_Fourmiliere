@@ -2,6 +2,7 @@ package jeudesFourmis.vue;
 
 import java.util.Optional;
 
+import Exceptions.OtherExceptions;
 import application.Main;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -41,16 +42,19 @@ public class GameController {
 		quit();
 		play_pause();
 		reset();
+		initialiser();
+		changerTaillePlateau();
+		posergraines();
 	}
 	
-	public void  afficheMatrice(Fourmiliere f) 
+	/*public void  afficheMatrice(Fourmiliere f) 
 	  {	  	  
 		      System.out.println("-------------------- "+" ----------------------------------");
 		      System.out.println("---------------------      --------------------------------");
 		      System.out.println(f.stringMurs());
 		      System.out.println(f.stringGraines());	
 		      System.out.println(f.stringFourmis());
-	  }
+	  }*/
 	
 	private void service() {
 		Service<Void> service = new Service<Void>() {
@@ -61,7 +65,7 @@ public class GameController {
 					protected Void call() throws Exception {
 						
 						while(!isCancelled()) {
-							Thread.sleep(500);
+							Thread.sleep((int)(vue.getMaxSlider()+vue.getMinSlider()-vue.getValueSlider()));
 							Platform.runLater(() -> f.evolue());
 							Platform.runLater(() -> vue.synchroniser(f));
 						}
@@ -84,14 +88,14 @@ public class GameController {
 	
 	public void quit()
 	{
-		this.vue.getQuit().setOnAction(e->{
+		this.vue.getBoutton().getQuit().setOnAction(e->{
 		Platform.exit();
 	});
 	}
 	
 	public void reset()
 	{
-		this.vue.getReset().setOnAction(e->{
+		this.vue.getBoutton().getReset().setOnAction(e->{
 			Alert alert = new Alert(AlertType.CONFIRMATION);
 			alert.setTitle("Confirmation");
 			alert.setHeaderText("Êtes-vous sûr de vouloir réinitialiser ?");
@@ -103,20 +107,88 @@ public class GameController {
 			}
 		});
 	}
-	/*public void ajoutFourmi()
+	
+	public void initialiser()
 	{
-		this.vue.getPanneau().setOnMouseClicked(event->this.vue.getPanneau().pressed(event));
+		this.vue.getBoutton().getInit().setOnAction(e->
+		{
+			int nbF = Integer.parseInt(this.vue.getBoutton().getNbfT().getText());
+			int nbG = Integer.parseInt(this.vue.getBoutton().getNbgT().getText());
+			int nbM = Integer.parseInt(this.vue.getBoutton().getNbmT().getText());
+			
+			f.resetFourmiliere();
+			f.init(nbF,nbG,nbM);
+			vue.synchroniser(f);
+		});
+	}
+	
+	
+	public void changerTaillePlateau()
+	{
+		this.vue.getBoutton().getChangexyPlateau().setOnAction(e->
+		{
+			int taille = Integer.parseInt(this.vue.getBoutton().getSize().getText());
+			try 
+			{
+				if (taille<20) 
+				{
+					throw new OtherExceptions();
+				}
+				else {
+				f = new Fourmiliere(taille,taille,f.getQmaxProperty().getValue());
+				for (int i =0; i <(int)((taille/2)-2); i++){
+			        f.setQteGraines(i,2*i, 1);
+			        f.setQteGraines((taille/2)+1-i,2*i , 1);
+			      }
+				this.vue.getPanneau().changeGrille(f);
+				System.out.println("taille = " + taille);
+				bindings();
+				
+				service();
+				quit();
+				play_pause();
+				reset();
+				initialiser();
+				changerTaillePlateau();
+				posergraines();
+			}
+			}catch(OtherExceptions exception )
+			{
+				Alert alert = new Alert(AlertType.WARNING);
+				alert.setTitle("Error taille");
+				alert.setContentText(OtherExceptions.NOT_GOOD_SIZE);
+				alert.show();
+			}
+		});
 
-	}*/
+	}
+
+	
+	public void posergraines()
+	{
+		this.vue.getPanneau().setOnScroll(e->
+		{
+			double x = (e.getX()/11);
+			double y = (e.getY()/11);
+			int ratioy = (int) y;
+			int ratiox = (int) x;
+			if(e.getDeltaY()>0)
+				f.setQteGraines(ratioy, ratiox, f.getQteGraines(ratioy, ratiox)+1);
+			if (e.getDeltaY()<0)
+				f.setQteGraines(ratioy, ratiox, f.getQteGraines(ratioy, ratiox)-1);
+			this.vue.graineSynchro(f);
+		});
+	}
 	
 	public void play_pause()
 	{
-		this.vue.getPlay_pause().setOnAction(e -> {
+		this.vue.getBoutton().getPlay_pause().setOnAction(e -> {
 		if(!this.service.isRunning())
 		{	
 			System.out.print("if");
-			this.vue.getPlay_pause().setText(" Pause ");
+			this.vue.getBoutton().getPlay_pause().setText(" Pause ");
 			this.vue.getPanneau().setDisable(true);
+			this.vue.getPanneau().disableStroke();
 			service.stateProperty().addListener((observable, oldValue, newValue) -> {
 				switch (newValue) {
 					case CANCELLED:
@@ -133,31 +205,12 @@ public class GameController {
 		{
 			System.out.print("else");
 			
-			this.vue.getPlay_pause().setText("Play");
+			this.vue.getBoutton().getPlay_pause().setText("Play");
 			this.vue.getPanneau().setDisable(false);
+			vue.getPanneau().enableStroke();
 			service.cancel();
 		}
 	});
 	}
-	
-	
-	
-	
-	/*/Bouton Loupe 
-	loupe.setOnAction(e->{
-		root2.setPrefSize(330, 330);
-		panneau.setPANE_HEIGHT(11);
-		panneau.setPANE_WIDTH(11);
-		Scene sceneZoom = new Scene(root2);
-		primaryStage.setScene(sceneZoom);
-		primaryStage.show();
-	});
-	
-	
-	// Clic sur panneau
-/*	panneau.setOnMouseClicked(e -> {
-		compteurX.setValue((int) e.getX());
-		compteurY.setValue((int) e.getY());
-	});*/
 	
 }

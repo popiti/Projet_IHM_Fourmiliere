@@ -2,6 +2,7 @@ package jeudesFourmis.model;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.NumberBinding;
@@ -63,7 +64,7 @@ public class Fourmiliere {
     this.qMax = qMax ; 
     IntegerProperty width = new SimpleIntegerProperty(l);
 	IntegerProperty height = new SimpleIntegerProperty(h);
-	IntegerProperty graines = new SimpleIntegerProperty(qMax);
+	IntegerProperty graines = new SimpleIntegerProperty(this.qMax);
 	  
 	this.getLargeurProperty().bind(width);
 	this.getHauteurProperty().bind(height);
@@ -143,6 +144,11 @@ public class Fourmiliere {
   public IntegerProperty getQmaxProperty() {
 		return qmaxProperty;
 	}
+  
+  public void setQmaxProperty(int value) {
+		this.qmaxProperty.set(value);
+	}
+  
   public IntegerProperty getNbrGrainesProperty()
 	{
 		return this.nbrGrainesProperty;
@@ -186,8 +192,11 @@ public class Fourmiliere {
 	    this.hauteur = this.getHauteurProperty().getValue();
 	    this.qMax = this.getQmaxProperty().getValue();
 		
-	    this.getNbrFourmiProperty().unbind();
-	    this.getNbrFourmiProperty().setValue(0);
+	    {	
+	    	this.getNbrFourmiProperty().unbind();
+	    	this.getNbrFourmiProperty().setValue(0);
+	    }
+	    
 	    this.getNbrGrainesProperty().setValue(0);
 	    this.getIterationProperty().setValue(0);
 	    this.lesFourmis = new LinkedList<Fourmi>(); 
@@ -207,6 +216,48 @@ public class Fourmiliere {
 	      for (int j =0 ; j < largeur+2; j++)
 		qteGraines [i][j]=0 ; 
 	}
+	
+	public void init(int nbf, int nbg, int nbm)
+	{
+		Random rand = new Random();
+		while(nbm>0)
+		{
+			int row = rand.nextInt(this.largeurProperty.getValue()-1)+1;
+			int col = rand.nextInt(this.hauteurProperty.getValue()-1)+1;
+			if(!this.getMur(row, col))
+			{
+				this.setMur(row, col, true);
+				nbm--;
+			}
+		}
+		/*while(nbg>0)
+		{
+			int row = rand.nextInt(this.largeurProperty.getValue()-1)+1;
+			int col = rand.nextInt(this.hauteurProperty.getValue()-1)+1;
+			if(!this.getMur(row, col))
+			{
+				setQteGraines(row, col, 1);
+				nbg--;
+			}
+			
+			
+		}*/
+		while(nbf>0)
+		{
+			int row = rand.nextInt(this.largeurProperty.getValue()-1)+1;
+			int col = rand.nextInt(this.hauteurProperty.getValue()-1)+1;
+			if(!this.getMur(row, col))
+			{
+				this.ajouteFourmi(row, col);
+				nbf--;
+			}
+		}
+		this.setQMax(nbg);
+		this.getQmaxProperty().unbind();
+		IntegerProperty qmaxx = new SimpleIntegerProperty(this.getQMax());
+		this.getQmaxProperty().bind(qmaxx);
+	}
+	
 	
   /**
    * Presence  d'une fourmi au point (x,y) du terrain
@@ -255,6 +306,7 @@ public class Fourmiliere {
     if(qte < 0 || qte > this.getQmaxProperty().getValue()) {
       return;
     }
+    this.setNbrGrainesProperty(Bindings.add(this.nbrGrainesProperty, new SimpleIntegerProperty(-this.getQteGraines(x, y))).getValue());
     this.qteGraines[y][x]=qte;
     this.setNbrGrainesProperty(Bindings.add(this.nbrGrainesProperty, new SimpleIntegerProperty(qte)).getValue());
   }
@@ -302,11 +354,11 @@ public class Fourmiliere {
       int posY = f.getY(); 
       // la fourmi f prend ?  
       if (!f.porte() &&  qteGraines[f.getY()][f.getX()]>0){
-	//if (Math.random()<Fourmi.probaPrend(compteGrainesVoisines(posX,posY))){
-	  f.prend();
-	  System.out.println("Prend  : true"+ "|| deltaX->"+f.getX()+" || deltaY->"+f.getY() );
-	  qteGraines[posY][posX]--;					
-	//}
+    	  if (Math.random()<Fourmi.probaPrend(compteGrainesVoisines(posX,posY))){
+			  f.prend();
+			  System.out.println("Prend  : true"+ "|| deltaX->"+f.getX()+" || deltaY->"+f.getY() );
+			  qteGraines[posY][posX]--;					
+    	  }
       }
       // la fourmi f se déplace. 
       int deltaX ; 
@@ -360,11 +412,11 @@ public class Fourmiliere {
       
       // la fourmi pose ? 
       if (f.porte() && qteGraines[deltaY][deltaX]<qMax){
-    //if (Math.random()<Fourmi.probaPose(compteGrainesVoisines(deltaX,deltaY))){
-	  f.pose();
-	  qteGraines[deltaY][deltaX]++;	
-	  System.out.println("Pose : true ||" + deltaX +"<-deltaX | deltaY->"+ deltaY);
-	//}
+	    if (Math.random()<Fourmi.probaPose(compteGrainesVoisines(deltaX,deltaY))){
+		  f.pose();
+		  qteGraines[deltaY][deltaX]++;	
+		  System.out.println("Pose : true ||" + deltaX +"<-deltaX | deltaY->"+ deltaY);
+		}
 	
       };
     }
