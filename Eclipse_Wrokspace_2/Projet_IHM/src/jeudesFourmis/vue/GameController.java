@@ -39,7 +39,6 @@ public class GameController {
 		bindings();
 		
 		service();
-		quit();
 		play_pause();
 		reset();
 		initialiser();
@@ -84,15 +83,6 @@ public class GameController {
 		vue.getInfos().getIterationsL().textProperty().bind(Bindings.concat("Nombre d'itérations : ").concat(f.getIterationProperty().asString()));
 	}
 	
-	
-	
-	public void quit()
-	{
-		this.vue.getBoutton().getQuit().setOnAction(e->{
-		Platform.exit();
-	});
-	}
-	
 	public void reset()
 	{
 		this.vue.getBoutton().getReset().setOnAction(e->{
@@ -130,7 +120,7 @@ public class GameController {
 			int taille = Integer.parseInt(this.vue.getBoutton().getSize().getText());
 			try 
 			{
-				if (taille<20) 
+				if ((taille<20) || (taille>70)) 
 				{
 					throw new OtherExceptions();
 				}
@@ -145,7 +135,6 @@ public class GameController {
 				bindings();
 				
 				service();
-				quit();
 				play_pause();
 				reset();
 				initialiser();
@@ -155,7 +144,7 @@ public class GameController {
 			}catch(OtherExceptions exception )
 			{
 				Alert alert = new Alert(AlertType.WARNING);
-				alert.setTitle("Error taille");
+				alert.setTitle("Error size");
 				alert.setContentText(OtherExceptions.NOT_GOOD_SIZE);
 				alert.show();
 			}
@@ -185,9 +174,9 @@ public class GameController {
 		this.vue.getBoutton().getPlay_pause().setOnAction(e -> {
 		if(!this.service.isRunning())
 		{	
-			System.out.print("if");
 			this.vue.getBoutton().getPlay_pause().setText(" Pause ");
 			this.vue.getPanneau().setDisable(true);
+			this.vue.getBoutton().disableButtonsAll();
 			this.vue.getPanneau().disableStroke();
 			service.stateProperty().addListener((observable, oldValue, newValue) -> {
 				switch (newValue) {
@@ -203,10 +192,10 @@ public class GameController {
 		}
 		else 
 		{
-			System.out.print("else");
 			
 			this.vue.getBoutton().getPlay_pause().setText("Play");
 			this.vue.getPanneau().setDisable(false);
+			this.vue.getBoutton().enableButtonsAll();
 			vue.getPanneau().enableStroke();
 			service.cancel();
 		}

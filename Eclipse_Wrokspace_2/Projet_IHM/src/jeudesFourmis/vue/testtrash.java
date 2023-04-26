@@ -6,6 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -14,6 +15,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import jeudesFourmis.model.Fourmiliere;
 
 
 public class testtrash extends Application {
@@ -27,7 +29,7 @@ public static final int PANE_HEIGHT = 500;
 	
 
 		// Création des objets
-		BorderPane root = new BorderPane();
+		/*BorderPane root = new BorderPane();
 		//Grille panneau = new Grille(f);
 		Circle cercle = new Circle();
 		Infos i = new Infos();
@@ -51,15 +53,15 @@ public static final int PANE_HEIGHT = 500;
 		root.setBottom(b);
 		//root.setCenter(panneau);
 		root.setRight(rightBox);
-    	root.setLeft(leftBox);
+    	root.setLeft(leftBox);*/
 	
-	Scene scene = new Scene(root);
+	Scene scene = new Scene(createcontent());
 	primaryStage.setScene(scene);
 	primaryStage.show();
 }
 	private Parent createcontent() {
 		
-		// Création des objets
+		/*/ Création des objets
 		BorderPane root = new BorderPane();
 		//Grille panneau = new Grille(f);
 		Circle cercle = new Circle();
@@ -84,7 +86,30 @@ public static final int PANE_HEIGHT = 500;
 		root.setBottom(b);
 		//root.setCenter(panneau);
 		root.setRight(rightBox);
-    	root.setLeft(leftBox);
+    	root.setLeft(leftBox);*/
+    	
+		Fourmiliere f = new Fourmiliere(Grille.TAILLE_DEFAULT, Grille.TAILLE_DEFAULT, 3);
+    	BorderPane root = new BorderPane();
+		Grille panneau = new Grille(f);
+		Buttons b = new Buttons();
+		Slider slider = new Slider(100, 1000, 100);
+		Infos infos = new Infos();
+		VBox leftPane = new VBox();
+		// Styles
+		
+		
+		// Alignements, etc...
+		root.setPrefSize(panneau.getWidth(), panneau.getHeight());
+		root.setPrefSize(PANE_HEIGHT, PANE_WIDTH);
+		root.setBottom(b);
+		root.setCenter(panneau);
+		root.setLeft(leftPane);
+		root.setTop(slider);
+		
+		// Emboitement des panneaux/boutons
+		leftPane.getChildren().addAll(infos.getIterationsL(),infos.getGrainesL(),infos.getFourmisL());
+		b.getSize().setText(""+f.getLargeurProperty().getValue()+"");
+    	
 		return root ;
 	}
 	public static void main(String[] args) {

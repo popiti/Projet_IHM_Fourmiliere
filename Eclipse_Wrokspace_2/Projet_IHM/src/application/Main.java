@@ -11,6 +11,7 @@ import jeudesFourmis.vue.GameVue;
 import jeudesFourmis.vue.Grille;
 import jeudesFourmis.vue.Infos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -32,25 +33,26 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primarystage) {
 		
-		stage = primarystage;
-		BorderPane root = new BorderPane();
-		Fourmiliere f = new Fourmiliere(Grille.TAILLE_DEFAULT, Grille.TAILLE_DEFAULT, 3);
-		 for (int i =0; i <10; i++){
-		        f.setQteGraines(i,2*i, 1);
-		        f.setQteGraines(11-i,2*i , 1);
-		      }
-        GameVue vue = new GameVue(f);
-        
-        root.setBottom(vue);
-		
-        GameController c = new GameController(f,vue);
         primarystage.setTitle("Grid");
-        primarystage.setScene(new Scene(root));
+        primarystage.setScene(new Scene(createcontent()));
         primarystage.show();
      
     }
     public static void main(String[] args) {
         Application.launch(args);
     }
- 
+    private Parent createcontent() {
+		
+		// Création des objets
+		BorderPane root = new BorderPane();
+		Fourmiliere f = new Fourmiliere(Grille.TAILLE_DEFAULT, Grille.TAILLE_DEFAULT, 3);
+		 for (int i =0; i <10; i++){
+		        f.setQteGraines(i,2*i, 1);
+		        f.setQteGraines(11-i,2*i , 1);
+		      }
+       GameVue vue = new GameVue(f);
+       GameController c = new GameController(f,vue);
+       root = vue;
+       return root;
+    }
 }

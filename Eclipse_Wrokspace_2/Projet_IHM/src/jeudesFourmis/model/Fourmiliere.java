@@ -1,6 +1,6 @@
 package jeudesFourmis.model;
 
-import java.util.LinkedList;
+
 import java.util.List;
 import java.util.Random;
 
@@ -10,6 +10,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  * Classe de gestion de la fourmiliere
@@ -258,6 +259,22 @@ public class Fourmiliere {
 		this.getQmaxProperty().bind(qmaxx);
 	}
 	
+	public Fourmi getFourmi(int x, int y)
+	{
+		int cpt =0;
+		Iterator<Fourmi> ItFourmi = lesFourmis.iterator();
+	    while (ItFourmi.hasNext()) {
+	      cpt++;
+	      Fourmi f = ItFourmi.next();
+	      int posX = f.getX(); 
+	      int posY = f.getY(); 
+	      if((posX == x ) && (posY==y))
+	      {
+	    	  return f;
+	      }
+	    }
+	    return null;
+	}
 	
   /**
    * Presence  d'une fourmi au point (x,y) du terrain

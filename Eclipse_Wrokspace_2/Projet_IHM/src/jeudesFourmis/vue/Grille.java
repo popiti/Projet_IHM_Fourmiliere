@@ -3,7 +3,10 @@ package jeudesFourmis.vue;
 import java.util.ArrayList;
 import java.util.List;
 
+import Exceptions.OtherExceptions;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -61,7 +64,7 @@ public class Grille extends GridPane  {
 	                    {
 							if (!f.getMur(this.getRowIndex(rectmp), this.getColumnIndex(rectmp)))
 							{
-								this.addFourmi(this.getColumnIndex(rectmp),  this.getRowIndex(rectmp));
+								this.addFourmi(this.getColumnIndex(rectmp),  this.getRowIndex(rectmp),f);
 								f.ajouteFourmi(this.getRowIndex(rectmp),  this.getColumnIndex(rectmp));
 							}
 	                    }
@@ -99,26 +102,54 @@ public class Grille extends GridPane  {
 	    }
 	    this.setOnMouseDragged(e->
 		{
-			
+			try {
+				
 			double xs=e.getX()/11; // 10 pour le carré et 0.5 1er stroke haut bas et 0.5 pour gauche droite dépendemment de notre orientation
 			double ys=e.getY()/11; // taille carré 10 px + 0,5*2 pour les stroke 
 			
-			if(!f.getMur((int)xs, (int)ys) && (!e.isShiftDown() && (!f.contientFourmi((int)ys,(int)xs))))
+			if((xs > this.PANE_WIDTH) || (ys > this.PANE_HEIGHT) || (xs <= 0) || (ys <= 0) )
 			{
-					f.setMur((int)ys, (int)xs, true);
-					this.changeColor((int)xs,(int)ys);
+				
+				throw new OtherExceptions();
+				
+			}
+			else if(!f.getMur((int)ys, (int)xs) && (!e.isShiftDown() && (!f.contientFourmi((int)ys,(int)xs))))
+	            {
+	                    f.setMur((int)ys, (int)xs, true);
+	                    this.changeColor((int)ys,(int)xs);
+	            }
+			}catch(OtherExceptions exception)
+			{
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setTitle("ERROR OUT OF BOUND");
+				alert.setContentText(OtherExceptions.NOT_DRAGGABLE);
+				alert.show();
 			}
 		});
 	    
-	  //  this.func.setStage(stage);
 	}
 	
-	public void addFourmi(int col,int row)
+	public void addFourmi(int col,int row, Fourmiliere f)
 	{
 		Circle cercle = new Circle(RADIUS);
-		cercle.setStyle("-fx-fill: green; -fx-stroke: black;");
-	    this.add(cercle,col,row);
-	    this.fourmis.add(cercle);
+		if(f.contientFourmi(row, col))
+		{
+			if(f.getFourmi(row, col).porte())
+			{
+				cercle.setStyle("-fx-fill: blue; -fx-stroke: black;");
+			}
+			else 
+			{
+				cercle.setStyle("-fx-fill: green; -fx-stroke: black;");
+			}
+			
+		}
+		else 
+		{
+			cercle.setStyle("-fx-fill: green; -fx-stroke: black;");
+		}
+		 this.add(cercle,col,row);
+		 this.fourmis.add(cercle);
 	}
 
 	
@@ -150,8 +181,7 @@ public class Grille extends GridPane  {
 	}
 	
 	public void changeColor(int xs, int ys) {
-        System.out.println(" local case X="+xs +" Y="+ys);
-        this.cases[xs][ys].setFill(Color.BLACK);
+        this.cases[ys][xs].setFill(Color.BLACK);
 
     }
 	public int getOldX() {
@@ -201,7 +231,6 @@ public class Grille extends GridPane  {
 		this.setGridLinesVisible(true);
 		this.PANE_WIDTH = f.getLargeurProperty().getValue();
 		this.PANE_HEIGHT = f.getHauteurProperty().getValue();
-		System.out.println("Taille : " +PANE_HEIGHT);
 		Rectangle casestmp[][] = new Rectangle[PANE_WIDTH+2][PANE_HEIGHT+2];
 		this.cases = casestmp;
 		int width = f.getLargeurProperty().getValue();
@@ -236,7 +265,7 @@ public class Grille extends GridPane  {
 	                    {
 							if (!f.getMur(this.getRowIndex(rectmp), this.getColumnIndex(rectmp)))
 							{
-								this.addFourmi(this.getColumnIndex(rectmp),  this.getRowIndex(rectmp));
+								this.addFourmi(this.getColumnIndex(rectmp),  this.getRowIndex(rectmp),f);
 								f.ajouteFourmi(this.getRowIndex(rectmp),  this.getColumnIndex(rectmp));
 							}
 	                    }
@@ -272,14 +301,29 @@ public class Grille extends GridPane  {
 				 this.setOnMouseDragged(e->
 					{
 						
-						double xs=e.getX()/11; // 10 pour le carré et 0.5 1er stroke haut bas et 0.5 pour gauche droite dépendemment de notre orientation
-						double ys=e.getY()/11; // taille carré 10 px + 0,5*2 pour les stroke 
-						
-						if(!f.getMur((int)xs, (int)ys) && (!e.isShiftDown() && (!f.contientFourmi((int)ys,(int)xs))))
-						{
-								f.setMur((int)ys, (int)xs, true);
-								this.changeColor((int)xs,(int)ys);
-						}
+						try {
+							
+							double xs=e.getX()/11; // 10 pour le carré et 0.5 1er stroke haut bas et 0.5 pour gauche droite dépendemment de notre orientation
+							double ys=e.getY()/11; // taille carré 10 px + 0,5*2 pour les stroke 
+							
+							if(!f.getMur((int)ys, (int)xs) && (!e.isShiftDown() && (!f.contientFourmi((int)ys,(int)xs))))
+					            {
+					                    f.setMur((int)ys, (int)xs, true);
+					                    this.changeColor((int)ys,(int)xs);
+					            }
+							else if((xs > PANE_HEIGHT) || (ys > PANE_WIDTH) || (xs <= 0) || (ys <= 0) )
+							{
+								
+								throw new OtherExceptions();
+								
+							}
+							}catch(OtherExceptions exception)
+							{
+								Alert alert = new Alert(AlertType.ERROR);
+								alert.setTitle("Error out of bound");
+								alert.setContentText(OtherExceptions.NOT_DRAGGABLE);
+								alert.show();
+							}
 					});
 				this.getChildren().add(rectmp);
 				this.cases[col][row]=rectmp;

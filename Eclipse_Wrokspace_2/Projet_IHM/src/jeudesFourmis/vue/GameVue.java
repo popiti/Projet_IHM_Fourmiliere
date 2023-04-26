@@ -21,13 +21,13 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import jeudesFourmis.model.Fourmiliere;
 
-public class GameVue extends GridPane {
+public class GameVue extends BorderPane {
 	
 	public static final int VGROW = 15;
 	public static final int HGROW = 5;
 	public static final int RADIUS = 5;
-	public static final int PANE_WIDTH = 1000;
-	public static final int PANE_HEIGHT = 1000;
+	public static final int PANE_WIDTH = 1500;
+	public static final int PANE_HEIGHT = 500;
 	
 	private Grille panneau;
 	private Infos infos = new Infos();
@@ -44,25 +44,41 @@ public class GameVue extends GridPane {
  		this.setPadding(new Insets(10));
 
  		// Création des objets
-		VBox root = new VBox();
 		Grille panneau = new Grille(f);
 		this.panneau = panneau;
 		Buttons b = new Buttons();
 		this.slider = new Slider(100, 1000, 100);
+		Label sliderL = new Label("Vitesse de simulation");
+		HBox topPane = new HBox(HGROW);
+		VBox leftPane = new VBox();
+		VBox rightPane = new VBox();
+		VBox bottomPane = new VBox();
+		QuitButton quit = new QuitButton();
 		// Styles
-		
+		sliderL.setFont(new Font("Arial", 22));
 		
 		// Alignements, etc...
-		root.setPrefSize(panneau.getWidth(), panneau.getHeight());
-		this.setPrefSize(PANE_HEIGHT, PANE_WIDTH);
-		// Emboitement des panneaux/boutons
+		this.setPrefSize(PANE_WIDTH, PANE_HEIGHT);
+		rightPane.setAlignment(Pos.CENTER);
+		topPane.setAlignment(Pos.CENTER);
+		b.setAlignment(Pos.CENTER);
+		bottomPane.setAlignment(Pos.BOTTOM_RIGHT);
+		this.setMargin(b, new Insets(0, 0, 0, 50));
+		this.setMargin(topPane, new Insets(0, 0, 30, 0));
+		this.setCenter(b);
+		this.setRight(rightPane);
+		this.setLeft(leftPane);
+		this.setTop(topPane);
+		this.setBottom(bottomPane);
 		
+		// Emboitement des panneaux/boutons
+		rightPane.getChildren().addAll(infos.getIterationsL(),infos.getGrainesL(),infos.getFourmisL());
+		leftPane.getChildren().addAll(panneau);
+		topPane.getChildren().addAll(sliderL,this.slider);
+		bottomPane.getChildren().add(quit);
 		b.getSize().setText(""+f.getLargeurProperty().getValue()+"");
-		root.getChildren().addAll(this.slider,infos.getIterationsL(),infos.getGrainesL(),infos.getFourmisL(),panneau,new Spring(), b);
 		this.setBoutton(b);
 		//this.setPanneau(panneau);
-		this.getChildren().addAll(root);
-		
 	}
 
 	public Infos getInfos()
@@ -119,7 +135,7 @@ public class GameVue extends GridPane {
 			for (int col = 0; col < f.getHauteurProperty().getValue()+2; col++) {
 				if(f.contientFourmi(row, col))
 				{
-					this.getPanneau().addFourmi( col, row);
+					this.getPanneau().addFourmi(col, row,f);
 				}
 			}
 	    }

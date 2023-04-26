@@ -11,7 +11,6 @@ import javafx.scene.layout.VBox;
 public class Buttons extends VBox{
 	public static final int VGROW = 15;
 	public static final int HGROW = 5;
-	private Button quit;
 	private Button loupe;
 	private Button play_pause;
 	private Button reset;
@@ -36,22 +35,20 @@ public class Buttons extends VBox{
 		HBox textAreaG = new HBox(HGROW);
 		GridPane buttonsPane = new GridPane();
 		GridPane buttonsPane2 = new GridPane();
-		Button quit = new Button("Quit");
 		Button loupe = new Button("loupe");
 		Button play_pause = new Button("Play");
 		Button reset = new Button("Reset");
 		Button init = new Button("Initialiser");
 		Button changexyPlateau = new Button("Changer la taille du plateau ");
-		TextField plateau = new TextField("AAA");
+		TextField plateau = new TextField();
 		Label nbF = new Label("Nombre de fourmis : ");
 		Label nbM = new Label("Nombre de murs : ");
-		Label nbG = new Label("Nombre de graines : ");
+		Label nbG = new Label("Nombre de graines max par cases : ");
 		TextField nbfT = new TextField();
 		TextField nbmT = new TextField();
 		TextField nbgT = new TextField();
 		
 		//Styles 
-		quit.setStyle("-fx-border-color: black; -fx-border-width: 2;");
         reset.setStyle("-fx-border-color: black; -fx-border-width: 2;");
         loupe.setStyle("-fx-border-color: black; -fx-border-width: 2;");
         play_pause.setStyle("-fx-border-color: black; -fx-border-width: 2;");
@@ -84,13 +81,27 @@ public class Buttons extends VBox{
 		text.getChildren().addAll(buttonsPane2);
 		bottomLeftArea.getChildren().addAll(buttonsPane,text);
 		bottomRightTopArea.getChildren().add(reset);
-		bottomRightBottomArea.getChildren().add(quit);
 		bottomRightArea.getChildren().addAll(bottomRightTopArea, new Spring(),  bottomRightBottomArea);
 		bottomArea.getChildren().addAll(bottomLeftArea, new Spring(), bottomRightArea);
 		
 		plateau.setDisable(false);
+		nbfT.textProperty().addListener((observable, oldValue, newValue) -> {
+		    if (newValue.matches("\\d*")) return;
+		    nbfT.setText(newValue.replaceAll("[^\\d]", ""));
+		});
+		nbgT.textProperty().addListener((observable, oldValue, newValue) -> {
+		    if (newValue.matches("\\d*")) return;
+		    nbgT.setText(newValue.replaceAll("[^\\d]", ""));
+		});
+		nbmT.textProperty().addListener((observable, oldValue, newValue) -> {
+		    if (newValue.matches("\\d*")) return;
+		    nbmT.setText(newValue.replaceAll("[^\\d]", ""));
+		});
+		plateau.textProperty().addListener((observable, oldValue, newValue) -> {
+		    if (newValue.matches("\\d*")) return;
+		    plateau.setText(newValue.replaceAll("[^\\d]", ""));
+		});
 		this.setLoupe(loupe);
-		this.setQuit(quit);
 		this.setPlay_pause(play_pause);
 		this.setReset(reset);	
 		this.setInit(init);
@@ -100,14 +111,7 @@ public class Buttons extends VBox{
 		this.setNbgT(nbgT);
 		this.setNbmT(nbmT);
 		this.getChildren().add(bottomArea);
-		this.setAlignment(Pos.BOTTOM_RIGHT);
-	}
-	public Button getQuit() {
-		return quit;
-	}
-
-	public void setQuit(Button quit) {
-		this.quit = quit;
+		this.setAlignment(Pos.CENTER);
 	}
 
 	public Button getLoupe() {
@@ -169,4 +173,21 @@ public class Buttons extends VBox{
 	public void setNbgT(TextField nbgT) {
 		this.nbgT = nbgT;
 	}
+	
+	public void disableButtonsAll()
+	{
+		this.getReset().setDisable(true);
+		this.getInit().setDisable(true);
+		this.getChangexyPlateau().setDisable(true);
+		this.getLoupe().setDisable(true);
+	}
+	
+	public void enableButtonsAll()
+	{
+		this.getReset().setDisable(false);
+		this.getInit().setDisable(false);
+		this.getChangexyPlateau().setDisable(false);
+		this.getLoupe().setDisable(false);
+	}
+	
 }
