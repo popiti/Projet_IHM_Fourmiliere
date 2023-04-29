@@ -2,8 +2,7 @@ package jeudesFourmis.vue;
 
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import jeudesFourmis.model.*;
-
+import javafx.scene.text.Font;
 
 public class Infos extends HBox {
 	
@@ -13,7 +12,9 @@ public class Infos extends HBox {
 
 	public Infos()
 	{	
-		
+		this.graines.setFont(new Font("Arial", 16));
+		this.fourmis.setFont(new Font("Arial", 16));
+		this.iterations.setFont(new Font("Arial", 16));
 	}
 	
 	public Label getGrainesL() {

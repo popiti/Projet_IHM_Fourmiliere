@@ -25,13 +25,18 @@ import java.util.LinkedList;
  
 public class Fourmiliere {
   
+  //Creations des Properties 
   private IntegerProperty largeurProperty = new SimpleIntegerProperty();
   private IntegerProperty hauteurProperty = new SimpleIntegerProperty();
   private IntegerProperty qmaxProperty = new SimpleIntegerProperty();  	
   private IntegerProperty nbrGrainesProperty = new SimpleIntegerProperty();
   private IntegerProperty nbrfourmiProperty = new SimpleIntegerProperty();
   private IntegerProperty iterationProperty = new SimpleIntegerProperty();
-  private int sizeListF = 0;
+  
+  //2 attributs qui permettent de récupérer une largeur et une hauteur de la fourmilière
+  private int xNow;
+  private int yNow;
+  
   //Largeur et hauteur de la matrice du plateau
   private int largeur,hauteur;
   
@@ -63,6 +68,8 @@ public class Fourmiliere {
     this.largeur = l;
     this.hauteur = h;
     this.qMax = qMax ; 
+    
+    //Bindings sur la largeur && la hauteur && la quantité max de graines 
     IntegerProperty width = new SimpleIntegerProperty(l);
 	IntegerProperty height = new SimpleIntegerProperty(h);
 	IntegerProperty graines = new SimpleIntegerProperty(this.qMax);
@@ -105,7 +112,27 @@ public class Fourmiliere {
     return hauteur; 
   }
   
-  /** 
+  //Retourne une largeur de la fourmilière
+  public int getxNow() {
+	return xNow;
+  }
+  
+  //xNow la nouvelle largeur
+  public void setxNow(int xNow) {
+	this.xNow = xNow;
+	}
+  
+  //Retourne une hauteur de la fourmilière
+  public int getyNow() {
+	return yNow;
+  }
+  
+  //yNow la nouvelle largeur
+  public void setyNow(int yNow) {
+	this.yNow = yNow;
+  }
+
+/** 
    * Retourne le nombre max de graines par case
    * @return               le qMax     
    */
@@ -142,6 +169,9 @@ public class Fourmiliere {
     murs[y][x]=mur;
   }
   
+  /*
+   * Getter et setter sur les properties 
+  */
   public IntegerProperty getQmaxProperty() {
 		return qmaxProperty;
 	}
@@ -187,6 +217,10 @@ public class Fourmiliere {
 		this.iterationProperty.setValue(value);;
 	}
 	
+	/*
+	 * Recrée la fourmilière à zéro
+	 * On "unbind" les properties pour reset leur valeur
+	*/
 	public void resetFourmiliere()
 	{
 		this.largeur = this.getLargeurProperty().getValue();
@@ -218,35 +252,28 @@ public class Fourmiliere {
 		qteGraines [i][j]=0 ; 
 	}
 	
+	/*
+	 * On ajoute d'abord des murs dans la fourmilière dans des cellules aléatoires
+	 * Ensuite on ajoute des fourmis dans la fourmilière dans des cellules aléatoires
+	 * On initialise la nouvelle quantité max de graines par case
+	*/
 	public void init(int nbf, int nbg, int nbm)
 	{
 		Random rand = new Random();
 		while(nbm>0)
 		{
-			int row = rand.nextInt(this.largeurProperty.getValue()-1)+1;
-			int col = rand.nextInt(this.hauteurProperty.getValue()-1)+1;
+			int row = rand.nextInt(this.largeurProperty.getValue())+1;
+			int col = rand.nextInt(this.hauteurProperty.getValue())+1;
 			if(!this.getMur(row, col))
 			{
 				this.setMur(row, col, true);
 				nbm--;
 			}
 		}
-		/*while(nbg>0)
-		{
-			int row = rand.nextInt(this.largeurProperty.getValue()-1)+1;
-			int col = rand.nextInt(this.hauteurProperty.getValue()-1)+1;
-			if(!this.getMur(row, col))
-			{
-				setQteGraines(row, col, 1);
-				nbg--;
-			}
-			
-			
-		}*/
 		while(nbf>0)
 		{
-			int row = rand.nextInt(this.largeurProperty.getValue()-1)+1;
-			int col = rand.nextInt(this.hauteurProperty.getValue()-1)+1;
+			int row = rand.nextInt(this.largeurProperty.getValue())+1;
+			int col = rand.nextInt(this.hauteurProperty.getValue())+1;
 			if(!this.getMur(row, col))
 			{
 				this.ajouteFourmi(row, col);
@@ -259,6 +286,7 @@ public class Fourmiliere {
 		this.getQmaxProperty().bind(qmaxx);
 	}
 	
+	//On récupère une fourmi dans une cellule
 	public Fourmi getFourmi(int x, int y)
 	{
 		int cpt =0;
@@ -296,8 +324,8 @@ public class Fourmiliere {
       Fourmi f = new Fourmi(x,y,false);
       fourmis[y][x]=true ; 			
       lesFourmis.add(f);
+      //A chaque fois que j'ajoute une fourmi dans la liste, je mets à jour le binding
       IntegerProperty size = new SimpleIntegerProperty(this.lesFourmis.size());
-     // this.sizeListF++;
       this.nbrfourmiProperty.bind(size);
     };
   }
@@ -323,6 +351,7 @@ public class Fourmiliere {
     if(qte < 0 || qte > this.getQmaxProperty().getValue()) {
       return;
     }
+  //A chaque fois que j'ajoute une graine dans une case, je mets à jour le binding avec la nouvelle valeur, "-this.getQteGraines(x, y))).getValue()" si on retranche des graines "qte" si on en ajoute
     this.setNbrGrainesProperty(Bindings.add(this.nbrGrainesProperty, new SimpleIntegerProperty(-this.getQteGraines(x, y))).getValue());
     this.qteGraines[y][x]=qte;
     this.setNbrGrainesProperty(Bindings.add(this.nbrGrainesProperty, new SimpleIntegerProperty(qte)).getValue());
@@ -373,7 +402,6 @@ public class Fourmiliere {
       if (!f.porte() &&  qteGraines[f.getY()][f.getX()]>0){
     	  if (Math.random()<Fourmi.probaPrend(compteGrainesVoisines(posX,posY))){
 			  f.prend();
-			  System.out.println("Prend  : true"+ "|| deltaX->"+f.getX()+" || deltaY->"+f.getY() );
 			  qteGraines[posY][posX]--;					
     	  }
       }
@@ -425,18 +453,16 @@ public class Fourmiliere {
       fourmis[deltaY][deltaX]=true; 
       f.setX(deltaX);
       f.setY(deltaY);
-      System.out.println("Fourmi n° : "+pl+ "||" + deltaX +"<-deltaX | deltaY->"+ deltaY);
       
       // la fourmi pose ? 
       if (f.porte() && qteGraines[deltaY][deltaX]<qMax){
 	    if (Math.random()<Fourmi.probaPose(compteGrainesVoisines(deltaX,deltaY))){
 		  f.pose();
 		  qteGraines[deltaY][deltaX]++;	
-		  System.out.println("Pose : true ||" + deltaX +"<-deltaX | deltaY->"+ deltaY);
-		}
-	
+		}	
       };
     }
+    //Compte le nombre d'itérations et met à jour le binding
     this.setIterationProperty(Bindings.add(this.iterationProperty, new SimpleIntegerProperty(1)).getValue());
   }
 
